@@ -99,7 +99,7 @@
           "y": 970
         },
         "trim": "do-not-trim",
-        "transcription_callback_url": "https://ratty-bubble-8000.twil.io/record2email",
+        "transcription_callback_url": "<TRANSCRIPTION CALLBACK URL>",
         "play_beep": "true",
         "timeout": 5,
         "max_length": 3600
@@ -181,7 +181,7 @@
             "key": "timezone"
           }
         ],
-        "url": "https://ratty-bubble-8000.twil.io/uk-business-hours"
+        "url": "<FUNCTION URL>"
       }
     },
     {
