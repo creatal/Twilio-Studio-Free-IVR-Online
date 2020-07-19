@@ -11,7 +11,7 @@ A Twilio Studio IVR Flow Template which allows you to Create your own automated 
 
 ## Installation
 
-Download this project to your local drive. Extract the files and then follow these staps:
+Download this project to your local drive. Extract the files and then follow these steps:
 
 - Import content from JSON file to your Twilio Studio Flow Trigger widget.
 - Customise the call flow to your needs
@@ -20,7 +20,7 @@ Download this project to your local drive. Extract the files and then follow the
 
 ## Usage
 
-For full usage and testing instructions see the [Twilio Studio Free IVR Online](https://consultantsussex.com/free-ivr-online-business-voice-recording/) tutorial.
+For full usage and testing instructions see the [Twilio Studio Free IVR Online tutorial](https://consultantsussex.com/free-ivr-online-business-voice-recording/).
 
 ## Support
 
