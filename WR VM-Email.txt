@@ -1,0 +1,26 @@
+//Initialise SendGrid Mail Client
+const sgMail = require('@sendgrid/mail');
+
+// Define Handler function required for all Twilio Functions
+exports.handler = function(context, event, callback) {
+
+// Build SG mail request
+sgMail.setApiKey(context.SENDGRID_API_SECRET);
+        // Define message params
+        const msg = {
+          to: context.TO_EMAIL_ADDRESS,
+          from: context.FROM_EMAIL_ADDRESS,
+          text: `New Voicemail from: ${event.From}\n Transcription is: ${event.TranscriptionText}\n Recording URL is: ${event.RecordingUrl}`,
+          subject: `New Voicemail from: ${event.From}`,
+        };
+        // Send message
+        sgMail.send(msg)
+        .then(response => {
+            console.log("Neat.")
+            callback();
+        })
+        .catch(err => {
+            console.log("Not neat.")
+            callback(err);
+        });
+};

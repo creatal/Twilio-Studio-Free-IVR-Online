@@ -1,0 +1,243 @@
+{
+  "description": "IVR Template by White Rabbit Consultancy",
+  "states": [
+    {
+      "name": "Trigger",
+      "type": "trigger",
+      "transitions": [
+        {
+          "event": "incomingMessage"
+        },
+        {
+          "next": "Business_hours",
+          "event": "incomingCall"
+        },
+        {
+          "event": "incomingRequest"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": 250,
+          "y": 50
+        }
+      }
+    },
+    {
+      "name": "gather_input",
+      "type": "gather-input-on-call",
+      "transitions": [
+        {
+          "next": "connect_call_1",
+          "event": "keypress"
+        },
+        {
+          "next": "connect_call_1",
+          "event": "speech"
+        },
+        {
+          "next": "connect_call_1",
+          "event": "timeout"
+        }
+      ],
+      "properties": {
+        "voice": "Polly.Emma",
+        "number_of_digits": 1,
+        "speech_timeout": "auto",
+        "offset": {
+          "x": -350,
+          "y": 510
+        },
+        "loop": 1,
+        "finish_on_key": "",
+        "say": "Thank you for calling <Your Company Name>. Please hold to be connected.",
+        "language": "en-GB",
+        "stop_gather": false,
+        "gather_language": "en",
+        "profanity_filter": "true",
+        "timeout": 1
+      }
+    },
+    {
+      "name": "say_play_1",
+      "type": "say-play",
+      "transitions": [
+        {
+          "next": "record_voicemail_1",
+          "event": "audioComplete"
+        }
+      ],
+      "properties": {
+        "voice": "Polly.Amy",
+        "offset": {
+          "x": 220,
+          "y": 630
+        },
+        "loop": 1,
+        "say": "Sorry we can't take your call right now. Please leave a message and we will get back to you as soon as possible.",
+        "language": "en-GB"
+      }
+    },
+    {
+      "name": "record_voicemail_1",
+      "type": "record-voicemail",
+      "transitions": [
+        {
+          "event": "recordingComplete"
+        },
+        {
+          "event": "noAudio"
+        },
+        {
+          "event": "hangup"
+        }
+      ],
+      "properties": {
+        "transcribe": true,
+        "offset": {
+          "x": 380,
+          "y": 970
+        },
+        "trim": "do-not-trim",
+        "transcription_callback_url": "https://ratty-bubble-8000.twil.io/record2email",
+        "play_beep": "true",
+        "timeout": 5,
+        "max_length": 3600
+      }
+    },
+    {
+      "name": "connect_call_1",
+      "type": "connect-call-to",
+      "transitions": [
+        {
+          "next": "split_1",
+          "event": "callCompleted"
+        },
+        {
+          "event": "hangup"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -350,
+          "y": 760
+        },
+        "caller_id": "{{contact.channel.address}}",
+        "noun": "number",
+        "to": "<Your Call Number>",
+        "timeout": 12
+      }
+    },
+    {
+      "name": "split_1",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "event": "noMatch"
+        },
+        {
+          "next": "say_play_1",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "If value equal_to no-answer",
+              "arguments": [
+                "{{widgets.connect_call_1.DialCallStatus}}"
+              ],
+              "type": "equal_to",
+              "value": "no-answer"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.connect_call_1.DialCallStatus}}",
+        "offset": {
+          "x": -360,
+          "y": 1000
+        }
+      }
+    },
+    {
+      "name": "Business_hours",
+      "type": "run-function",
+      "transitions": [
+        {
+          "next": "split_2",
+          "event": "success"
+        },
+        {
+          "event": "fail"
+        }
+      ],
+      "properties": {
+        "offset": {
+          "x": -280,
+          "y": 230
+        },
+        "parameters": [
+          {
+            "value": "Europe/London",
+            "key": "timezone"
+          }
+        ],
+        "url": "https://ratty-bubble-8000.twil.io/uk-business-hours"
+      }
+    },
+    {
+      "name": "split_2",
+      "type": "split-based-on",
+      "transitions": [
+        {
+          "next": "say_play_2",
+          "event": "noMatch"
+        },
+        {
+          "next": "gather_input",
+          "event": "match",
+          "conditions": [
+            {
+              "friendly_name": "open",
+              "arguments": [
+                "{{widgets.Business_hours.body}}"
+              ],
+              "type": "starts_with",
+              "value": "open"
+            }
+          ]
+        }
+      ],
+      "properties": {
+        "input": "{{widgets.Business_hours.body}}",
+        "offset": {
+          "x": 390,
+          "y": 250
+        }
+      }
+    },
+    {
+      "name": "say_play_2",
+      "type": "say-play",
+      "transitions": [
+        {
+          "next": "record_voicemail_1",
+          "event": "audioComplete"
+        }
+      ],
+      "properties": {
+        "voice": "Polly.Amy",
+        "offset": {
+          "x": 580,
+          "y": 630
+        },
+        "loop": 1,
+        "say": "Thank you for calling <Your Company Name>.  Our office, is now closed. Please leave a message after the tone.",
+        "language": "en-GB"
+      }
+    }
+  ],
+  "initial_state": "Trigger",
+  "flags": {
+    "allow_concurrent_calls": true
+  }
+}
